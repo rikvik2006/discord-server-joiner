@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  2captcha:
+    specifier: ^3.0.7
+    version: 3.0.7
   axios:
     specifier: ^1.6.5
     version: 1.6.5
@@ -30,6 +33,14 @@ devDependencies:
     version: 5.3.3
 
 packages:
+
+  /2captcha@3.0.7:
+    resolution: {integrity: sha512-i7iswxBsNzzFxQCebgdowHW61UK34+o8KaDonJxRH+gDDeQsiN/3uK0X/fo4AmMTE26c4VSHVe0X8b8CVVNZiw==}
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
 
   /@aikochan2k6/qrcode-terminal@0.12.1:
     resolution: {integrity: sha512-GfSrCCqKti0XyomCOaFRL//dnEpDux4tJleywuYChjHue+pqjM0lP39cQq8qtmfcOm1CqhWQeB6JS6kY4tQ8Tw==}

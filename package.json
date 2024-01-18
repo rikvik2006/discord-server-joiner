@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "2captcha": "^3.0.7",
     "axios": "^1.6.5",
     "discord.js-selfbot-v13": "^3.0.2",
     "https-proxy-agent": "^7.0.2",
