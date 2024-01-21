@@ -1,5 +1,6 @@
-import { Client, ClientOptions } from "discord.js-selfbot-v13";
-import { HttpsProxyAgent } from "https-proxy-agent";
+import { Captcha, Client, ClientOptions } from "discord.js-selfbot-v13";
+import { Solver } from "2captcha";
+import { HttpsProxyAgent } from "https-proxy-agent"
 import { ConfigType } from "./types";
 import fs from "fs";
 
@@ -7,19 +8,19 @@ import fs from "fs";
 class ServerJoiner {
     inviteCode: string = "";
     joinDelay: number = 3000;
-    tokens: string[] = []
-    captchaService: string = "";
+    tokens: string[] = [];
     captchaApiKey: string = "";
+    proxyes: string[] = []
+    readonly solver: Solver
     private client?: Client;
 
     constructor() {
         try {
-            let data = fs.readFileSync("./files/config.json",)
+            let data = fs.readFileSync("./files/config.json")
             const JSONDataConfig: ConfigType = JSON.parse(data.toString());
 
             this.inviteCode = JSONDataConfig.inviteCode;
             this.joinDelay = JSONDataConfig.joinDelay;
-            this.captchaService = JSONDataConfig.captchaService;
             this.captchaApiKey = JSONDataConfig.captchaApiKey;
 
             data = fs.readFileSync('./file/tokens.txt');
@@ -29,32 +30,62 @@ class ServerJoiner {
         } catch (err) {
             console.log(err);
         }
+
+        this.solver = new Solver(this.captchaApiKey);
     }
 
-    private createClient() {
-        /*
-        captchaService: config.captcha_service.toLowerCase(),
-        captchaKey: config.captcha_api_key,
-        checkUpdate: false,
-        http: { agent: agent },
-        captchaWithProxy: true,
-        proxy: randomProxy,
-        restRequestTimeout: 60 * 1000,
-        interactionTimeout: 60 * 1000,
-        restWsBridgeTimeout: 5 * 1000,
-        */
+    readProxy(): void {
+        try {
+            let proxyes = fs.readFileSync("./files/proxy.txt").toString().split("\n")
+            proxyes.map((proxy) => proxy.replace("\r", "").replace("\n", ""));
+
+            this.proxyes = proxyes;
+        } catch (err) {
+            console.log("❌ There was an erorr reading the proxy file")
+            console.log(err);
+        }
+    }
+
+    getRandomProxy(): string {
+        const proxy = this.proxyes[Math.floor(Math.random() * this.proxyes.length)]
+        return proxy;
+    }
+
+    private createClient(): void {
+        const proxyAgent: HttpsProxyAgent<string> = new HttpsProxyAgent(this.getRandomProxy())
 
         const options: ClientOptions = {
-            captchaSolver(
-            )
+            captchaSolver: async (captcha: Captcha, userAgent: string) => {
+                console.log(`🍜 Captcha Sitekey: ${captcha.captcha_sitekey}`)
+                try {
+                    const { data } = await this.solver.hcaptcha(
+                        captcha.captcha_sitekey,
+                        'discord.com',
+                        {
+                            invisible: 1,
+                            userAgent: userAgent,
+                            data: captcha.captcha_rqdata
+                        }
+                    )
+
+                    return data
+                } catch (err) {
+                    console.log("❌ There was an error, while soving the captcha")
+                    throw err;
+                }
+            },
+            ws: {
+                agent: proxyAgent,
+            },
+            http: {
+                agent: proxyAgent,
+            }
         }
 
-        this.client = new Client({
-            captchaSolver()
-        });
+        this.client = new Client(options);
     }
 
-    async bulkJoin() {
+    async bulkJoin(): Promise<void> {
         if (this.tokens.length == 0) {
             throw new Error("tokens list is empty. load tokens in the file ./files/tokens.txt")
         }
@@ -73,14 +104,15 @@ class ServerJoiner {
                 }
 
                 console.log(`✅ Logged in as ${this.client.user?.username}`)
+                const invite = await this.client.fetchInvite(this.inviteCode)
                 try {
-                    await this.client!.acceptInvite(`https://discord.gg/${this.inviteCode}`)
+                    await this.client!.acceptInvite(this.inviteCode)
                 } catch (err) {
                     console.log("❌ There was an error during accept invite");
                     console.log(err);
                 }
 
-                console.log(`⭐ ${this.client.user?.username} joined in the guild`)
+                console.log(`⭐ ${this.client.user?.username} joined in guild: ${invite.guild?.name}`)
                 this.client.destroy();
             })
 

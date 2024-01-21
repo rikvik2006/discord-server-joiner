@@ -18,6 +18,7 @@
     "discord.js-selfbot-v13": "^3.0.2",
     "https-proxy-agent": "^7.0.2",
     "nodemon": "^3.0.2",
+    "proxy-agent": "^6.3.1",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
