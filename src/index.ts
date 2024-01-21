@@ -6,27 +6,29 @@ import fs from "fs";
 
 
 class ServerJoiner {
+    debug: boolean
     inviteCode: string = "";
     joinDelay: number = 3000;
     tokens: string[] = [];
     captchaApiKey: string = "";
+    useProxy: boolean = false
     proxyes: string[] = []
     readonly solver: Solver
     private client?: Client;
 
-    constructor() {
+    constructor(debug: boolean = false) {
+        this.debug = debug;
         try {
             let data = fs.readFileSync("./files/config.json")
             const JSONDataConfig: ConfigType = JSON.parse(data.toString());
 
             this.inviteCode = JSONDataConfig.inviteCode;
             this.joinDelay = JSONDataConfig.joinDelay;
+            this.useProxy = JSONDataConfig.useProxy
             this.captchaApiKey = JSONDataConfig.captchaApiKey;
 
-            data = fs.readFileSync('./file/tokens.txt');
-            let tokenArray = data.toString().split("\n")
-            tokenArray = tokenArray.map((token) => token.trim().replace("\r", "").replace("\n", ""))
-            this.tokens = tokenArray;
+            this.loadTokens();
+            this.loadProxy()
         } catch (err) {
             console.log(err);
         }
@@ -34,7 +36,19 @@ class ServerJoiner {
         this.solver = new Solver(this.captchaApiKey);
     }
 
-    readProxy(): void {
+    loadTokens(): void {
+        try {
+            const data = fs.readFileSync('./file/tokens.txt');
+            let tokenArray = data.toString().split("\n")
+            tokenArray = tokenArray.map((token) => token.trim().replace("\r", "").replace("\n", ""))
+            this.tokens = tokenArray;
+        } catch (err) {
+            console.log("❌ There was an error in token loading")
+            console.log(err);
+        }
+    }
+
+    loadProxy(): void {
         try {
             let proxyes = fs.readFileSync("./files/proxy.txt").toString().split("\n")
             proxyes.map((proxy) => proxy.replace("\r", "").replace("\n", ""));
@@ -52,11 +66,16 @@ class ServerJoiner {
     }
 
     private createClient(): void {
-        const proxyAgent: HttpsProxyAgent<string> = new HttpsProxyAgent(this.getRandomProxy())
+
+
+        let proxyAgent: HttpsProxyAgent<string> | undefined;
+        if (this.useProxy) {
+            proxyAgent = new HttpsProxyAgent(this.getRandomProxy());
+        }
 
         const options: ClientOptions = {
             captchaSolver: async (captcha: Captcha, userAgent: string) => {
-                console.log(`🍜 Captcha Sitekey: ${captcha.captcha_sitekey}`)
+                this.debug ?? console.log(`🍜 Captcha Sitekey: ${captcha.captcha_sitekey}`)
                 try {
                     const { data } = await this.solver.hcaptcha(
                         captcha.captcha_sitekey,
@@ -74,13 +93,16 @@ class ServerJoiner {
                     throw err;
                 }
             },
-            ws: {
-                agent: proxyAgent,
-            },
-            http: {
-                agent: proxyAgent,
-            }
+            ...(proxyAgent ? {
+                ws: {
+                    agent: proxyAgent,
+                },
+                http: {
+                    agent: proxyAgent,
+                }
+            } : {})
         }
+
 
         this.client = new Client(options);
     }
@@ -120,4 +142,4 @@ class ServerJoiner {
     }
 }
 
-const app = new ServerJoiner()
+const app = new ServerJoiner(true);
