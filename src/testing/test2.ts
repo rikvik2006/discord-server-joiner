@@ -3,7 +3,7 @@ import CaptchaClient from "@infosimples/node_two_captcha";
 
 console.log("🍜 Starting test2.ts script")
 
-const captchaClient = new CaptchaClient("8fef4ac82a9076dfa21485fab1ea5d2b", {
+const captchaClient = new CaptchaClient("api-key", {
     timeout: 60000,
     polling: 5000,
     throwErrors: false,
@@ -40,4 +40,4 @@ client.on("ready", async () => {
 })
 
 
-client.login("MTE1Njk2NTIyMzg2NjA0ODU2Mg.G7kuBM.4zk9mllD8-2ZDAO2jCTj0PxLRIYX1g7Pa1w-Vw");
+client.login("token");

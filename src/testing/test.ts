@@ -1,7 +1,7 @@
 import { Client, Captcha } from "discord.js-selfbot-v13";
 const CaptchaResolver = require("2captcha");
 
-const solver = new CaptchaResolver.Solver("8fef4ac82a9076dfa21485fab1ea5d2b")
+const solver = new CaptchaResolver.Solver("api-keye")
 const inviteCode = "86rWJqqW"
 
 const captchaInfo: Captcha = {
@@ -43,4 +43,4 @@ client.on("ready", async () => {
     }
 })
 
-client.login("MTE1Njk2NTIyMzg2NjA0ODU2Mg.G7kuBM.4zk9mllD8-2ZDAO2jCTj0PxLRIYX1g7Pa1w-Vw");
+client.login("token");
