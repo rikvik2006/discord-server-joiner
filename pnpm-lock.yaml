@@ -8,6 +8,9 @@ dependencies:
   2captcha:
     specifier: ^3.0.7
     version: 3.0.7
+  '@infosimples/node_two_captcha':
+    specifier: ^1.2.0
+    version: 1.2.0
   axios:
     specifier: ^1.6.5
     version: 1.6.5
@@ -81,6 +84,14 @@ packages:
   /@discordjs/util@1.0.2:
     resolution: {integrity: sha512-IRNbimrmfb75GMNEjyznqM1tkI7HrZOf14njX7tCAAUetyZM1Pr8hX/EK2lxBCOgWDRmigbp24fD1hdMfQK5lw==}
     engines: {node: '>=16.11.0'}
+    dev: false
+
+  /@infosimples/node_two_captcha@1.2.0:
+    resolution: {integrity: sha512-nfNz4rhu63jvp6D/aKlSbu7GqBYTydjCz/jRGY8bTJI/h3i7bDqJ7S1c/MmIJjsrli27y6WBGuCNikxzlou51A==}
+    dependencies:
+      axios: 0.21.4
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@jridgewell/resolve-uri@3.1.1:
@@ -190,6 +201,14 @@ packages:
 
   /asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+    dev: false
+
+  /axios@0.21.4:
+    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
+    dependencies:
+      follow-redirects: 1.15.5
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /axios@1.6.5:
