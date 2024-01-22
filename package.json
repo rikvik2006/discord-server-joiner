@@ -1,7 +1,7 @@
 {
   "name": "discord-server-joiner",
   "version": "1.0.0",
-  "description": "",
+  "description": "Get all your discord tokens inside a server fast, without ban risks",
   "main": "./src/index.ts",
   "scripts": {
     "dev": "pnpm nodemon ./src/index.ts",
@@ -13,12 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "2captcha": "^3.0.7",
-    "@infosimples/node_two_captcha": "^1.2.0",
-    "axios": "^1.6.5",
     "discord.js-selfbot-v13": "^3.0.2",
     "https-proxy-agent": "^7.0.2",
     "nodemon": "^3.0.2",
-    "proxy-agent": "^6.3.1",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
