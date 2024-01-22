@@ -136,7 +136,7 @@ class ServerJoiner {
                         console.log("❌ There was an error during accept invite");
                         console.log(err);
                     } finally {
-                        // this.client!.destroy();
+                        this.client!.destroy();
                         resolve();
                     }
                 }
