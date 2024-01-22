@@ -2,8 +2,9 @@ import { Captcha, Client, ClientOptions } from "discord.js-selfbot-v13";
 import { Solver } from "2captcha";
 import { HttpsProxyAgent } from "https-proxy-agent"
 import { ConfigType } from "./types";
+import { setInterval as wait } from "node:timers/promises"
 import fs from "fs";
-
+import path from "path";
 
 class ServerJoiner {
     debug: boolean
@@ -19,7 +20,7 @@ class ServerJoiner {
     constructor(debug: boolean = false) {
         this.debug = debug;
         try {
-            let data = fs.readFileSync("./files/config.json")
+            let data = fs.readFileSync(path.join(".", "files", "config.json"))
             const JSONDataConfig: ConfigType = JSON.parse(data.toString());
 
             this.inviteCode = JSONDataConfig.inviteCode;
@@ -38,7 +39,7 @@ class ServerJoiner {
 
     loadTokens(): void {
         try {
-            const data = fs.readFileSync('./file/tokens.txt');
+            const data = fs.readFileSync(path.join(".", "files", "tokens.txt"));
             let tokenArray = data.toString().split("\n")
             tokenArray = tokenArray.map((token) => token.trim().replace("\r", "").replace("\n", ""))
             this.tokens = tokenArray;
@@ -50,8 +51,8 @@ class ServerJoiner {
 
     loadProxy(): void {
         try {
-            let proxyes = fs.readFileSync("./files/proxy.txt").toString().split("\n")
-            proxyes.map((proxy) => proxy.replace("\r", "").replace("\n", ""));
+            let proxyes = fs.readFileSync(path.join(".", "files", "proxyes.txt")).toString().split("\n")
+            proxyes = proxyes.map((proxy) => proxy.replace("\r", "").replace("\n", ""));
 
             this.proxyes = proxyes;
         } catch (err) {
@@ -94,52 +95,66 @@ class ServerJoiner {
                 }
             },
             ...(proxyAgent ? {
-                ws: {
-                    agent: proxyAgent,
-                },
                 http: {
                     agent: proxyAgent,
                 }
             } : {})
         }
 
-
         this.client = new Client(options);
     }
 
     async bulkJoin(): Promise<void> {
+        console.log("Tokens:", this.tokens.length)
         if (this.tokens.length == 0) {
             throw new Error("tokens list is empty. load tokens in the file ./files/tokens.txt")
         }
 
         for (let token of this.tokens) {
-            this.createClient()
-            if (!this.client) {
-                throw new Error(`Can't create the client with token: ${token}`)
-            }
+            await this.joinWithToken(token);
+        }
+    }
 
-            this.client.login(token);
+    private async joinWithToken(token: string): Promise<void> {
+        this.createClient();
+        if (!this.client) {
+            throw new Error(`Can't create the client with token: ${token}`);
+        }
 
-            this.client.on("ready", async () => {
-                if (!this.client) {
-                    throw new Error(`Can't create the client with token: ${token}`)
+        // Wrap the entire process in a try-catch block to handle errors
+        try {
+            await new Promise<void>((resolve) => {
+                const readyListener = async () => {
+                    console.log(`✅ Logged in as ${this.client?.user?.username}`);
+                    const invite = await this.client!.fetchInvite(this.inviteCode);
+
+                    try {
+                        await this.client!.acceptInvite(this.inviteCode);
+                        console.log(`⭐ ${this.client?.user?.username} joined in guild: ${invite.guild?.name}`);
+                        await wait(this.joinDelay);
+                    } catch (err) {
+                        console.log("❌ There was an error during accept invite");
+                        console.log(err);
+                    } finally {
+                        // this.client!.destroy();
+                        resolve();
+                    }
                 }
 
-                console.log(`✅ Logged in as ${this.client.user?.username}`)
-                const invite = await this.client.fetchInvite(this.inviteCode)
-                try {
-                    await this.client!.acceptInvite(this.inviteCode)
-                } catch (err) {
-                    console.log("❌ There was an error during accept invite");
+                this.client!.once("ready", readyListener);
+
+                this.client!.login(token).catch((err) => {
+                    console.log("❌ There was an error in login token");
                     console.log(err);
-                }
-
-                console.log(`⭐ ${this.client.user?.username} joined in guild: ${invite.guild?.name}`)
-                this.client.destroy();
-            })
-
+                    resolve(); // Resolve the promise even if login fails to move to the next iteration
+                });
+            });
+        } catch (err) {
+            console.log("❌ There was an error in joinWithToken");
+            console.log(err);
         }
     }
 }
 
 const app = new ServerJoiner(true);
+app.bulkJoin()
