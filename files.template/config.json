@@ -1,3 +1,6 @@
 {
-    "invite_code": ""
+    "inviteCode": "",
+    "joinDelay": 3000,
+    "useProxy": true,
+    "captchaApiKey": ""
 }
