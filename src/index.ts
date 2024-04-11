@@ -1,4 +1,4 @@
-import { Captcha, Client, ClientOptions } from "discord.js-selfbot-v13";
+import { Captcha, Client, ClientOptions, DiscordAPIError, WebhookClient, MessageEmbed } from "discord.js-selfbot-v13";
 import { Solver } from "2captcha";
 import { HttpsProxyAgent } from "https-proxy-agent"
 import { ConfigType } from "./types";
@@ -13,6 +13,7 @@ class ServerJoiner {
     joinDelay: number = 3000;
     tokens: string[] = [];
     captchaApiKey: string = "";
+    discordWebhookJoinLogs: string = "";
     useProxy: boolean = false
     proxyes: string[] = []
     readonly solver: Solver
@@ -28,6 +29,7 @@ class ServerJoiner {
             this.joinDelay = JSONDataConfig.joinDelay;
             this.useProxy = JSONDataConfig.useProxy
             this.captchaApiKey = JSONDataConfig.captchaApiKey;
+            this.discordWebhookJoinLogs = JSONDataConfig.discordWebhookJoinLogs;
 
             this.loadTokens();
             this.loadProxy()
@@ -135,6 +137,26 @@ class ServerJoiner {
                         }
                         await this.client.acceptInvite(this.inviteCode);
                         console.log(`⭐ ${this.client?.user?.username} joined in guild: ${invite.guild?.name}`);
+
+                        const webhookClient = new WebhookClient({ url: this.discordWebhookJoinLogs })
+                        const joinEmbed = new MessageEmbed()
+                            .setColor("GREEN")
+                            .addFields([
+                                {
+                                    name: "username",
+                                    value: this.client.user?.username ? this.client.user?.username : "Undefined Username"
+                                },
+                                {
+                                    name: "Guild name",
+                                    value: invite.guild?.name ? invite.guild?.name : "undefined Guild name"
+                                }
+                            ])
+                            .setDescription("Server joiner is working bulk user invite NOW")
+
+                        webhookClient.send({
+                            embeds: [joinEmbed]
+                        })
+
                         await wait(this.joinDelay);
                     } catch (err) {
                         console.log("❌ There was an error during accept invite");

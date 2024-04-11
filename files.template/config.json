@@ -2,5 +2,6 @@
     "inviteCode": "",
     "joinDelay": 3000,
     "useProxy": true,
-    "captchaApiKey": ""
+    "captchaApiKey": "",
+    "discordWebhookJoinLogs": ""
 }

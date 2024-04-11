@@ -3,4 +3,5 @@ export interface ConfigType {
     joinDelay: number;
     useProxy: boolean;
     captchaApiKey: string;
+    discordWebhookJoinLogs: string;
 }
