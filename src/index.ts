@@ -2,7 +2,8 @@ import { Captcha, Client, ClientOptions } from "discord.js-selfbot-v13";
 import { Solver } from "2captcha";
 import { HttpsProxyAgent } from "https-proxy-agent"
 import { ConfigType } from "./types";
-import { setInterval as wait } from "node:timers/promises"
+// import { setInterval as wait } from "node:timers/promises"
+import { setTimeout as wait } from "node:timers/promises"
 import fs from "fs";
 import path from "path";
 
@@ -125,11 +126,14 @@ class ServerJoiner {
         try {
             await new Promise<void>((resolve) => {
                 const readyListener = async () => {
-                    console.log(`✅ Logged in as ${this.client?.user?.username}`);
+                    console.log(`[${new Date().toLocaleString("it-IT")}] ✅ Logged in as ${this.client?.user?.username}`);
                     const invite = await this.client!.fetchInvite(this.inviteCode);
 
                     try {
-                        await this.client!.acceptInvite(this.inviteCode);
+                        if (!this.client) {
+                            throw new Error(`Can't create the client with token: ${token}`)
+                        }
+                        await this.client.acceptInvite(this.inviteCode);
                         console.log(`⭐ ${this.client?.user?.username} joined in guild: ${invite.guild?.name}`);
                         await wait(this.joinDelay);
                     } catch (err) {

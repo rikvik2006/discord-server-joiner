@@ -108,7 +108,7 @@ def main():
                     print(
                         f"☕ [TMUX] Process started: Guild name: {guild_name}, Invite code: {invite_code}"
                     )
-                    time.sleep(1)
+                    time.sleep(5)
                 except subprocess.CalledProcessError as e:
                     print(f"Errore nell'esecuzione del comando: {e}")
                 except Exception as e:
