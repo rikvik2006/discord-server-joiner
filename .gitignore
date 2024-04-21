@@ -1,4 +1,10 @@
+# node
 node_modules/
-files/
 dist/
+
+# Application
+files/
 .env
+
+# VsCode
+.vscode/

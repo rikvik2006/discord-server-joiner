@@ -43,8 +43,9 @@ class ServerJoiner {
     loadTokens(): void {
         try {
             const data = fs.readFileSync(path.join(".", "files", "tokens.txt"));
-            let tokenArray = data.toString().split("\n")
-            tokenArray = tokenArray.map((token) => token.trim().replace("\r", "").replace("\n", ""))
+            let tokenArray = data.toString().split("\n");
+            tokenArray = tokenArray.map((token) => token.trim().replace("\r", "").replace("\n", ""));
+            tokenArray = tokenArray.filter((token) => token.length > 0);
             this.tokens = tokenArray;
         } catch (err) {
             console.log("❌ There was an error in token loading")
@@ -56,6 +57,7 @@ class ServerJoiner {
         try {
             let proxyes = fs.readFileSync(path.join(".", "files", "proxyes.txt")).toString().split("\n")
             proxyes = proxyes.map((proxy) => proxy.replace("\r", "").replace("\n", ""));
+            proxyes = proxyes.filter((proxy) => proxy.length > 0);
 
             this.proxyes = proxyes;
         } catch (err) {
