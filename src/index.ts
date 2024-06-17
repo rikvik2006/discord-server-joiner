@@ -96,6 +96,7 @@ class ServerJoiner {
                     return data
                 } catch (err) {
                     console.log("❌ There was an error, while soving the captcha")
+                    console.log(err);
                     throw err;
                 }
             },
