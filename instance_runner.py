@@ -75,7 +75,7 @@ def main():
                 )
                 
                 if response.status_code == 200:
-                    guild_name = response.json()["guild"]["name"].replace(" ", "_")
+                    guild_name = response.json()["guild"]["name"].replace(" ", "_").replace("'", "").replace("\"", "")
                 else:
                     print(f"❌ There was an error during the request. Status code: {response.status_code}")
                     guild_name = f"{index}-{invite_code}"
