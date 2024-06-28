@@ -19,7 +19,8 @@ This is a bulk discord server joiner. It will join all account tokens in the `to
     2. Under `joinDelay` put the delay between each join (in milliseconds)
     3. Under `useProxies` put `true` if you want to use proxies, `false` if you don't want to use proxies
     4. Under `captchaApiKey` put your 2captcha api key. If you don't have one, you can get one [here](https://2captcha.com/enterpage). The price for 1000 hCaptcha resolves is $2.99. This very cheap. This program need a 2captcha api key to solve hCaptcha. Without you will not be able to join the server, because now discord put hCaptcha every time you join a server.
-    5. Under `discordWebhookJoinLogs` put your discord webhook url if you want to get logs of the joins/fails and join statistics
+    5. Under `captchaRetryLimit` put the amount of retries the program will do if the captcha fails, default amount is 5, but if you can afford it you can put more, this will increase the time it takes to join the server, but it will increase the chance of success, my reccomandation is to put 10
+    6. Under `discordWebhookJoinLogs` put your discord webhook url if you want to get logs of the joins/fails and join statistics
 -   Build the project by running `pnpm build` in the terminal
 -   Run the project by running `pnpm start` in the terminal
 

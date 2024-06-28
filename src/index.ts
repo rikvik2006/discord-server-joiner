@@ -13,6 +13,7 @@ class ServerJoiner {
     joinDelay: number = 3000;
     tokens: string[] = [];
     captchaApiKey: string = "";
+    captchaRetryLimit: number = 5
     discordWebhookJoinLogs: string = "";
     useProxy: boolean = false
     proxyes: string[] = []
@@ -29,6 +30,7 @@ class ServerJoiner {
             this.joinDelay = JSONDataConfig.joinDelay;
             this.useProxy = JSONDataConfig.useProxy
             this.captchaApiKey = JSONDataConfig.captchaApiKey;
+            this.captchaRetryLimit = JSONDataConfig.captchaRetryLimit
             this.discordWebhookJoinLogs = JSONDataConfig.discordWebhookJoinLogs;
 
             this.loadTokens();
@@ -107,7 +109,9 @@ class ServerJoiner {
                     // Prevent Unknown Message erorr, but coulden't be the final solution
                     headers: { "x-super-properties": "ewogICJvcyI6ICJXaW5kb3dzIiwKICAiYnJvd3NlciI6ICJEaXNjb3JkIENsaWVudCIsCiAgInJlbGVhc2VfY2hhbm5lbCI6ICJjYW5hcnkiLAogICJjbGllbnRfdmVyc2lvbiI6ICIxLjAuNDkiLAogICJvc192ZXJzaW9uIjogIjEwLjAuMjI2MjEiLAogICJvc19hcmNoIjogIng2NCIsCiAgInN5c3RlbV9sb2NhbGUiOiAiZW4tVVMiLAogICJjbGllbnRfYnVpbGRfbnVtYmVyIjogIjE1MjQ1MCIsCiAgImNsaWVudF9ldmVudF9zb3VyY2UiOiBudWxsCn0=" }
                 }
-            } : {})
+            } : {}),
+
+            captchaRetryLimit: this.captchaRetryLimit
         }
 
         this.client = new Client(options);
@@ -157,7 +161,7 @@ class ServerJoiner {
                                     value: invite.guild?.name ? invite.guild?.name : "undefined Guild name"
                                 }
                             ])
-                            .setAuthor({ name: "Server Joinser", url: "https://github.com/rikvik2006/discord-server-joiner" })
+                            .setAuthor({ name: "Server Joiner", url: "https://github.com/rikvik2006/discord-server-joiner" })
 
                         await webhookClient.send({
                             embeds: [joinEmbed]

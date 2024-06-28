@@ -3,5 +3,6 @@
     "joinDelay": 3000,
     "useProxy": true,
     "captchaApiKey": "",
+    "captchaRetryLimit": 5,
     "discordWebhookJoinLogs": ""
 }
