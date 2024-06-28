@@ -1,4 +1,4 @@
-import { Captcha, Client, ClientOptions, DiscordAPIError, WebhookClient, MessageEmbed } from "discord.js-selfbot-v13";
+import { Captcha, Client, ClientOptions, WebhookClient, MessageEmbed, MessageAttachment } from "discord.js-selfbot-v13";
 import { Solver } from "2captcha";
 import { HttpsProxyAgent } from "https-proxy-agent"
 import { ConfigType } from "./types";
@@ -157,9 +157,9 @@ class ServerJoiner {
                                     value: invite.guild?.name ? invite.guild?.name : "undefined Guild name"
                                 }
                             ])
-                            .setDescription("Server joiner is working bulk user invite NOW")
+                            .setAuthor({ name: "Server Joinser", url: "https://github.com/rikvik2006/discord-server-joiner" })
 
-                        webhookClient.send({
+                        await webhookClient.send({
                             embeds: [joinEmbed]
                         })
 
@@ -167,6 +167,26 @@ class ServerJoiner {
                     } catch (err) {
                         console.log("❌ There was an error during accept invite");
                         console.log(err);
+                        const webhookClient = new WebhookClient({ url: this.discordWebhookJoinLogs })
+                        const failEmbed = new MessageEmbed()
+                            .setColor("RED")
+                            .addFields([
+                                {
+                                    name: "username",
+                                    value: this.client?.user?.username ? this.client.user?.username : "Undefined Username"
+                                },
+                                {
+                                    name: "Guild name",
+                                    value: invite.guild?.name ? invite.guild?.name : "undefined Guild name"
+                                }
+                            ])
+
+                        const errorBuffer: Buffer = Buffer.from(`${err}`)
+                        const errorAttachments = new MessageAttachment(errorBuffer, "Join Error")
+                        await webhookClient.send({
+                            embeds: [failEmbed],
+                            attachments: [errorAttachments]
+                        })
                     } finally {
                         this.client!.destroy();
                         resolve();
